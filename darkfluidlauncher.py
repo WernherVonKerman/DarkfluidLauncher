@@ -76,7 +76,7 @@ class RedirectApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Helldivers 2 DarkFluid Launcher")
-        self.setFixedSize(420, 220)
+        self.setFixedSize(420, 260)
         self.setStyleSheet("background-color: #9234eb;")
 
         # === Layout ===
@@ -109,7 +109,8 @@ class RedirectApp(QWidget):
         self.btn_darkfluid = QPushButton("Darkfluid Missions")
         self.btn_TCS = QPushButton("TCS Missions")
         self.btn_TCS2 = QPushButton("Deactivate TCS Missions")
-        self.buttons = [self.btn_darkfluid, self.btn_TCS, self.btn_TCS2]
+        self.btn_HiveWorlds = QPushButton("Hiveworld Missions")
+        self.buttons = [self.btn_darkfluid, self.btn_TCS, self.btn_TCS2, self.btn_HiveWorlds]
 
         for btn in self.buttons:
             btn.setStyleSheet("""
@@ -130,6 +131,7 @@ class RedirectApp(QWidget):
         self.btn_darkfluid.clicked.connect(lambda: self.start_and_switch("Darkfluid Missions", "https://api2.betapixel.net"))
         self.btn_TCS.clicked.connect(lambda: self.start_and_switch("TCS Missions", "https://api.betapixel.net"))
         self.btn_TCS2.clicked.connect(lambda: self.start_and_switch("Deactivate TCS Missions", "https://api1.betapixel.net"))
+        self.btn_HiveWorlds.clicked.connect(lambda: self.start_and_switch("HiveWorlds Missions", "https://api3.betapixel.net"))
 
         # Frida session variables
         self.session = None
