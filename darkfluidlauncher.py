@@ -2,12 +2,14 @@ import sys
 import subprocess
 import frida
 import base64
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QFrame
 )
 from PyQt5.QtGui import QPixmap, QIcon, QImage
 from PyQt5.QtCore import QTimer
+import webbrowser
 
 # Steam settings
 STEAM_URI = "steam://run/553850"
@@ -76,12 +78,16 @@ class RedirectApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Helldivers 2 DarkFluid Launcher")
-        self.setFixedSize(420, 260)
+        self.setFixedSize(430, 300)
         self.setStyleSheet("background-color: #9234eb;")
 
         # === Layout ===
         layout = QVBoxLayout()
         self.setLayout(layout)
+
+        # === Define Tutorial Website (For some fucking reason i cant put it in the button cuz the app will shit itself) ===
+        def TutorialWebsiteOpen():
+            webbrowser.open("https://www.speedrun.com/Helldivers2/guides/zf9n8")
 
         # === Status frame ===
         status_frame = QFrame()
@@ -98,20 +104,27 @@ class RedirectApp(QWidget):
         self.icon_label.setFixedSize(72, 78)
         self.icon_label.setScaledContents(True)
         self.icon_label.setPixmap(pixmap_from_base64(darkfluid_png_base64))
+        self.icon_label.setAlignment(QtCore.Qt.AlignRight)
         status_layout.addWidget(self.icon_label)
 
         # Status text
         self.label = QLabel("Select an operation helldiver:")
-        self.label.setStyleSheet("color: white; font-weight: bold; font-size: 14px;")
+        self.label.setStyleSheet("color: white; font-weight: bold; font-size: 15px;")
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
         status_layout.addWidget(self.label)
+
+        # Guide On Downgrading
+        self.btn_redirect = QPushButton("How do i downgrade my game?")
+        self.btn_redirect.clicked.connect(TutorialWebsiteOpen)
 
         # Buttons
         self.btn_darkfluid = QPushButton("Darkfluid Missions")
         self.btn_TCS = QPushButton("TCS Missions")
         self.btn_TCS2 = QPushButton("Deactivate TCS Missions")
-        self.btn_HiveWorlds = QPushButton("Hiveworld Missions")
+        self.btn_HiveWorlds = QPushButton("Gloom-related Missions")
         self.buttons = [self.btn_darkfluid, self.btn_TCS, self.btn_TCS2, self.btn_HiveWorlds]
-
+        self.buttons2 = [self.btn_redirect]
+    
         for btn in self.buttons:
             btn.setStyleSheet("""
                 QPushButton {
@@ -127,11 +140,29 @@ class RedirectApp(QWidget):
             """)
             layout.addWidget(btn)
 
+        for btn in self.buttons2:
+            btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #6a1b9a;
+                    color: orange;
+                    font-weight: bold;
+                    padding: 6px;
+                    border-radius: 5px;
+                }
+                QPushButton:hover {
+                    background-color: #ff0000;
+                }
+            """)
+            layout.addWidget(btn)
+
+        
+
         # Connect buttons
         self.btn_darkfluid.clicked.connect(lambda: self.start_and_switch("Darkfluid Missions", "https://api2.betapixel.net"))
         self.btn_TCS.clicked.connect(lambda: self.start_and_switch("TCS Missions", "https://api.betapixel.net"))
         self.btn_TCS2.clicked.connect(lambda: self.start_and_switch("Deactivate TCS Missions", "https://api1.betapixel.net"))
-        self.btn_HiveWorlds.clicked.connect(lambda: self.start_and_switch("HiveWorlds Missions", "https://api3.betapixel.net"))
+        self.btn_HiveWorlds.clicked.connect(lambda: self.start_and_switch("Gloom Missions", "https://api3.betapixel.net"))
+
 
         # Frida session variables
         self.session = None
@@ -153,7 +184,7 @@ class RedirectApp(QWidget):
             self.label.setText("Launching Helldivers 2 via Steam...")
             self.timer.start(2000)
         except Exception:
-            self.label.setText("Launcher Server Failed")
+            self.label.setText("Steam Launch Failed ")
 
     def try_attach(self):
         try:
@@ -171,7 +202,7 @@ class RedirectApp(QWidget):
             self.session = None
             self.script = None
         except Exception:
-            self.label.setText("Launcher Server Failed")
+            self.label.setText("Server Switch Failed")
             self.timer.stop()
 
 
