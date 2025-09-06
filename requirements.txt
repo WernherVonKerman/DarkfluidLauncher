@@ -1,0 +1,3 @@
+pyinstaller
+frida
+PyQt5
